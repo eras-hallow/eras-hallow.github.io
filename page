@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eras-hallow@tty1</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap');
+
+        :root {
+            --bg: #050505;
+            --text: #c0c0c0;
+            --green: #50fa7b;
+            --blue: #8be9fd;
+            --pink: #ff79c6;
+            --yellow: #f1fa8c;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Fira Code', monospace;
+            height: 100vh;
+            overflow: hidden;
+            font-size: 13px;
+        }
+
+        /* --- EFFETS VHS (SANS IMAGES) --- */
+        #noise-canvas {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 100; pointer-events: none;
+            opacity: 0.06;
+        }
+
+        .crt-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 101; pointer-events: none;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+            background-size: 100% 2px;
+        }
+
+        .scanline {
+            position: fixed; width: 100%; height: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            z-index: 102; top: -10px;
+            animation: moveScanline 12s linear infinite;
+        }
+        @keyframes moveScanline { to { top: 110%; } }
+
+        /* --- LAYOUT --- */
+        .main-wrapper {
+            position: relative;
+            z-index: 10;
+            padding: 20px;
+            height: 95vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .neofetch {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        #donut {
+            color: #fff;
+            white-space: pre;
+            font-size: 7px;
+            line-height: 7px;
+        }
+
+        .stats b { color: var(--green); }
+        .stats i { color: var(--pink); font-style: normal; }
+
+        #output {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: #333 transparent;
+        }
+
+        .prompt-line { display: flex; align-items: center; flex-shrink: 0; }
+        .user { color: var(--green); font-weight: bold; white-space: nowrap; }
+        
+        input {
+            background: transparent; border: none; color: #fff;
+            font-family: 'Fira Code', monospace; font-size: 14px;
+            outline: none; width: 100%; padding-left: 8px;
+        }
+
+        /* --- STYLE PROJETS VERBOSE --- */
+        .project-item {
+            margin-bottom: 15px;
+            border-left: 2px solid #333;
+            padding-left: 10px;
+        }
+        .project-title { color: var(--yellow); font-weight: bold; }
+        .project-desc { color: var(--text); font-size: 12px; margin: 4px 0; }
+        .project-link { 
+            color: var(--blue); 
+            text-decoration: none; 
+            font-weight: bold;
+        }
+        .project-link:hover { text-decoration: underline; background: rgba(139, 233, 253, 0.1); }
+    </style>
+</head>
+<body>
+
+    <canvas id="noise-canvas"></canvas>
+    <div class="crt-overlay"></div>
+    <div class="scanline"></div>
+
+    <div class="main-wrapper">
+        <div class="neofetch">
+            <pre id="donut"></pre>
+            <div class="stats">
+                <div><b>eras-hallow</b>@<b>github-os</b></div>
+                <div>-----------------------</div>
+                <div><i>OS:</i> Arch Linux x86_64</div>
+                <div><i>Hôte:</i> Portfolio VHS v2.0</div>
+                <div><i>Kernel:</i> 6.8.2-custom</div>
+                <div><i>Projets:</i> <span id="pkg-count">0</span></div>
+                <div><i>Shell:</i> zsh</div>
+                <div style="margin-top:8px;">
+                    <span style="background:#ff5555">&nbsp;&nbsp;</span>
+                    <span style="background:#50fa7b">&nbsp;&nbsp;</span>
+                    <span style="background:#f1fa8c">&nbsp;&nbsp;</span>
+                    <span style="background:#8be9fd">&nbsp;&nbsp;</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="output">
+            <div>[SYSTÈME] Session ouverte. Terminal prêt.</div>
+            <div>Tapez <span style="color:var(--pink)">'ls'</span> pour lister les projets ou <span style="color:var(--pink)">'aide'</span>.</div>
+            <br>
+        </div>
+
+        <div class="prompt-line">
+            <span class="user">eras-hallow@github:~$</span>
+            <input type="text" id="cmd" autofocus autocomplete="off">
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================
+           CONFIG : AJOUTE TES PROJETS ICI
+           ========================================== */
+        const MES_PROJETS = [
+            { 
+                nom: "Mon-Portfolio-Terminal", 
+                desc: "Ce portfolio même, conçu pour ressembler à un TTY Linux.", 
+                url: "https://github.com/eras-hallow/eras-hallow.github.io" 
+            }
+        ];
+
+        document.getElementById('pkg-count').textContent = MES_PROJETS.length;
+
+        /* --- GÉNÉRATION DU BRUIT (NOISE) --- */
+        const nCanvas = document.getElementById('noise-canvas');
+        const nCtx = nCanvas.getContext('2d');
+        function setNoise() { nCanvas.width = 400; nCanvas.height = 300; }
+        function drawNoise() {
+            const idata = nCtx.createImageData(nCanvas.width, nCanvas.height);
+            const d = new Uint32Array(idata.data.buffer);
+            for (let i = 0; i < d.length; i++) if (Math.random() > 0.95) d[i] = 0xffffffff;
+            nCtx.putImageData(idata, 0, 0);
+            requestAnimationFrame(drawNoise);
+        }
+        setNoise(); drawNoise();
+
+        /* --- ANIMATION DONUT.C --- */
+        const dPre = document.getElementById('donut');
+        let A = 0, B = 0;
+        setInterval(() => {
+            let b=[], z=[]; A += 0.07; B += 0.03;
+            let cA=Math.cos(A), sA=Math.sin(A), cB=Math.cos(B), sB=Math.sin(B);
+            for(let k=0;k<1760;k++) { b[k]=k%80===79?"\n":" "; z[k]=0; }
+            for(let j=0;j<6.28;j+=0.07) {
+                let ct=Math.cos(j), st=Math.sin(j);
+                for(let i=0;i<6.28;i+=0.02) {
+                    let sp=Math.sin(i), cp=Math.cos(i), h=ct+2, D=1/(sp*h*sA+st*cA+5), t=sp*h*cA-st*sA;
+                    let x=0|(40+30*D*(cp*h*cB-t*sB)), y=0|(12+15*D*(cp*h*sB+t*cB)), o=x+80*y;
+                    let N=0|(8*((st*sA-sp*ct*cA)*cB-sp*ct*sA-st*cA-cp*ct*sB));
+                    if(y<22 && y>=0 && x>=0 && x<79 && D>z[o]) { z[o]=D; b[o]=".,-~:;=!*#$@"[N>0?N:0]; }
+                }
+            }
+            dPre.innerHTML = b.join("");
+        }, 50);
+
+        /* --- LOGIQUE DU TERMINAL --- */
+        const input = document.getElementById('cmd');
+        const output = document.getElementById('output');
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const fullCmd = input.value.trim();
+                const val = fullCmd.toLowerCase();
+                
+                const cmdLine = document.createElement('div');
+                cmdLine.innerHTML = `<span class="user">eras-hallow@github:~$</span> ${fullCmd}`;
+                output.appendChild(cmdLine);
+
+                const res = document.createElement('div');
+                res.style.margin = "8px 0 15px 0";
+
+                if (val === 'ls') {
+                    MES_PROJETS.forEach(p => {
+                        const pDiv = document.createElement('div');
+                        pDiv.className = 'project-item';
+                        pDiv.innerHTML = `
+                            <div class="project-title">> ${p.nom}</div>
+                            <div class="project-desc">${p.desc}</div>
+                            <a href="${p.url}" target="_blank" class="project-link">[ OUVRIR_LE_DEPOT ]</a>
+                        `;
+                        res.appendChild(pDiv);
+                    });
+                } 
+                else if (val === 'aide' || val === 'help') {
+                    res.innerHTML = `Commandes disponibles :<br>
+                    - <span style="color:var(--pink)">ls</span> : Liste détaillée des projets<br>
+                    - <span style="color:var(--pink)">clear</span> : Effacer l'écran<br>
+                    - <span style="color:var(--pink)">whoami</span> : Infos développeur`;
+                }
+                else if (val === 'whoami') {
+                    res.textContent = "eras-hallow : Développeur passionné par le bas-niveau et le design rétro-futuriste.";
+                }
+                else if (val === 'clear') {
+                    output.innerHTML = '';
+                }
+                else if (val !== "") {
+                    res.textContent = `zsh: commande introuvable: ${val}`;
+                }
+
+                output.appendChild(res);
+                input.value = '';
+                output.scrollTop = output.scrollHeight;
+            }
+        });
+
+        // Focus forcé sur l'input
+        document.addEventListener('click', () => input.focus());
+    </script>
+</body>
+</html>

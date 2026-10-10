@@ -1,208 +1,232 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#000000">
-    <meta name="description" content="comatique — self-taught programmer interested in computer science, cybersecurity and low-level systems.">
+    <meta name="theme-color" content="#080808">
+    <meta name="description" content="comatique — programming, cybersecurity and computer science.">
+
     <title>comatique</title>
 
     <style>
         :root {
             color-scheme: dark;
-            --bg: #000;
-            --fg: #ddd;
-            --muted: #777;
-            --line: #292929;
+            --bg: #080808;
+            --text: #ededed;
+            --muted: #858585;
+            --line: #252525;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
             background: var(--bg);
-            color: var(--fg);
-            font: 14px/1.65 Arial, Helvetica, sans-serif;
+            color: var(--text);
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 14px;
+            line-height: 1.8;
         }
+
+        a { color: inherit; text-decoration: none; }
+        button { font: inherit; }
 
         #life {
             position: fixed;
             inset: 0;
             width: 100%;
             height: 100%;
-            opacity: .10;
-            pointer-events: none;
             z-index: 0;
+            opacity: 0.09;
+            pointer-events: none;
         }
 
-        main {
+        .page {
             position: relative;
             z-index: 1;
-            width: min(100% - 40px, 540px);
+            width: min(100% - 40px, 560px);
             margin: 0 auto;
-            padding: 13vh 0 36px;
+            padding: 85px 0 35px;
         }
 
-        header {
+        .topbar {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 16px;
+            margin-bottom: 70px;
         }
 
-        .avatar {
-            width: 48px;
-            height: 48px;
-            border: 1px solid var(--line);
-            border-radius: 50%;
-            object-fit: cover;
-            filter: grayscale(1);
-            background: #111;
-        }
+        .wordmark { font-weight: 600; letter-spacing: -0.5px; }
 
-        h1 {
-            margin: 0;
-            font-size: 27px;
-            font-weight: 500;
-            letter-spacing: -1px;
-        }
+        .languages { display: flex; gap: 5px; }
 
-        .subtitle {
-            margin: 5px 0 0;
+        .languages button {
+            padding: 4px 7px;
+            border: 1px solid transparent;
+            background: transparent;
             color: var(--muted);
-            font-size: 12px;
-        }
-
-        .language {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-
-        .language button {
-            padding: 0;
-            border: 0;
-            background: none;
-            color: var(--muted);
-            font: inherit;
             font-size: 11px;
             cursor: pointer;
         }
 
-        .language button:hover,
-        .language button.active {
-            color: var(--fg);
+        .languages button:hover,
+        .languages button.active {
+            border-color: var(--line);
+            color: var(--text);
         }
 
-        .bio {
-            margin: 30px 0 36px;
-            max-width: 490px;
-            color: #bdbdbd;
+        .avatar {
+            display: block;
+            width: 68px;
+            height: 68px;
+            margin-bottom: 23px;
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            object-fit: cover;
+            filter: grayscale(100%);
         }
 
-        section {
-            margin-top: 36px;
+        h1 {
+            margin: 0;
+            font-size: 35px;
+            font-weight: 500;
+            line-height: 1.3;
+            letter-spacing: -1.5px;
         }
+
+        .subtitle {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 19px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #bdbdbd;
+        }
+
+        section { margin-top: 42px; }
 
         .label {
-            margin: 0 0 12px;
-            font-size: 11px;
-            font-weight: 400;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-bottom: 16px;
             color: var(--muted);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
         }
 
-        .stack {
-            margin: 0;
-            color: #aaa;
-            overflow-wrap: anywhere;
+        p {
+            margin: 0 0 14px;
+            color: #b4b4b4;
         }
 
-        .links {
-            border-top: 1px solid var(--line);
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
         }
 
-        .links a {
+        .skill {
+            padding: 3px 9px;
+            border: 1px solid var(--line);
+            color: #bdbdbd;
+            font-size: 11px;
+        }
+
+        .links { display: flex; flex-direction: column; }
+
+        .link {
             display: flex;
             justify-content: space-between;
-            padding: 11px 0;
-            color: var(--fg);
-            text-decoration: none;
+            align-items: center;
+            padding: 12px 0;
             border-bottom: 1px solid var(--line);
-            transition: color .2s ease;
+            transition: color 0.2s;
         }
 
-        .links a:hover {
-            color: #888;
+        .link:first-child { border-top: 1px solid var(--line); }
+        .link:hover { color: var(--muted); }
+        .arrow { color: var(--muted); }
+
+        .music {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
         }
 
-        .arrow {
-            color: var(--muted);
+        .track { color: var(--text); font-size: 13px; }
+        .artist { display: block; color: var(--muted); font-size: 11px; }
+
+        .music-controls {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
         }
 
-        /* Spotify */
-
-        .spotify-player {
-            overflow: hidden;
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            background: #000;
+        .music button {
+            padding: 7px 11px;
+            border: 1px solid #444;
+            background: transparent;
+            color: var(--text);
+            font-size: 11px;
+            cursor: pointer;
         }
 
-        .spotify-player iframe {
-            display: block;
-            width: 100%;
-            height: 352px;
-            border: 0;
-            border-radius: 8px;
-            filter: grayscale(1);
+        .music button:hover {
+            background: #ededed;
+            color: #080808;
         }
 
         .music-status {
-            margin: 10px 0 0;
-            font-size: 11px;
-        }
-
-        .music-status a {
+            margin-top: 8px;
             color: var(--muted);
-            text-decoration: none;
-            transition: color .2s ease;
-        }
-
-        .music-status a:hover {
-            color: var(--fg);
+            font-size: 11px;
         }
 
         footer {
             display: flex;
             justify-content: space-between;
-            margin-top: 46px;
-            color: var(--muted);
+            gap: 15px;
+            margin-top: 70px;
+            padding-top: 18px;
+            border-top: 1px solid var(--line);
+            color: #666;
             font-size: 11px;
         }
 
-        a:focus-visible,
-        button:focus-visible {
-            outline: 1px solid #ddd;
-            outline-offset: 4px;
+        #youtube-player {
+            position: fixed;
+            left: -500px;
+            top: 0;
+            width: 200px;
+            height: 200px;
+            opacity: 0;
+            pointer-events: none;
         }
 
-        @media (max-width: 480px) {
-            main {
-                padding-top: 10vh;
-            }
-
-            .language {
-                justify-content: flex-start;
-            }
+        @media (max-width: 500px) {
+            .page { padding-top: 50px; }
+            .topbar { margin-bottom: 50px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            * {
+            *, *::before, *::after {
                 scroll-behavior: auto !important;
                 transition: none !important;
             }
@@ -213,346 +237,406 @@
 <body>
     <canvas id="life" aria-hidden="true"></canvas>
 
-    <main>
-        <header>
-            <img
-                class="avatar"
-                src="https://github.com/eras-hallow.png"
-                alt="GitHub profile picture"
-                width="48"
-                height="48"
-            >
+    <main class="page">
+        <nav class="topbar">
+            <a class="wordmark" href="#">comatique.</a>
 
-            <div>
-                <h1>comatique</h1>
-                <p class="subtitle" data-i18n="subtitle">
-                    Programmer / Cybersecurity / Former Roblox developer
-                </p>
+            <div class="languages" aria-label="Language">
+                <button class="active" data-lang="en">EN</button>
+                <button data-lang="fr">FR</button>
+                <button data-lang="es">ES</button>
+            </div>
+        </nav>
+
+        <header>
+            <img class="avatar" src="https://github.com/eras-hallow.png" alt="GitHub profile picture">
+            <h1>comatique</h1>
+            <p class="subtitle" data-i18n="subtitle">Programming · Cybersecurity · Systems</p>
+            <div class="status">
+                <span class="dot"></span>
+                <span data-i18n="status">Learning by building.</span>
             </div>
         </header>
 
-        <nav class="language" aria-label="Language">
-            <button type="button" data-lang="en" class="active">EN</button>
-            <button type="button" data-lang="fr">FR</button>
-            <button type="button" data-lang="es">ES</button>
-        </nav>
-
-        <p class="bio" data-i18n="bio">
-            I'm a 16-year-old self-taught programmer with a long-standing
-            interest in computer science, from software development to
-            low-level systems. I used to develop Roblox experiences, working
-            on scripting, interface design, building and coordinating
-            development work on roleplay projects.
-
-            <br><br>
-
-            Currently exploring cybersecurity, reverse engineering,
-            digital forensics, networking and operating systems. I enjoy
-            understanding how things work beneath the surface, learning
-            independently and going beyond the school curriculum.
-            My long-term goal is to teach computer science in higher education.
-        </p>
+        <section>
+            <div class="label" data-i18n="aboutTitle">About</div>
+            <div data-i18n="about">
+                <p>I'm a 16-year-old self-taught programmer currently studying computer science in high school. I've been interested in computers since childhood, especially in understanding how things work beneath the surface.</p>
+                <p>I've worked on Roblox projects involving scripting, interfaces, building and collaborative development. These days, I'm exploring cybersecurity, reverse engineering, digital forensics, networking and operating systems.</p>
+                <p>In the long run, I'd like to teach computer science in higher education.</p>
+            </div>
+        </section>
 
         <section>
-            <div class="label" data-i18n="skillsTitle">
-                Languages &amp; tools
+            <div class="label" data-i18n="techTitle">Technologies</div>
+            <div class="skills">
+                <span class="skill">Python</span>
+                <span class="skill">C</span>
+                <span class="skill">C++</span>
+                <span class="skill">Lua / Luau</span>
+                <span class="skill">JavaScript</span>
+                <span class="skill">HTML / CSS</span>
+                <span class="skill">SQL</span>
+                <span class="skill">x86-64 ASM</span>
+                <span class="skill">Bash</span>
+                <span class="skill">PowerShell</span>
+                <span class="skill">Linux</span>
             </div>
+        </section>
 
-            <p class="stack">
-                Python · C · C++ · Lua / Luau · JavaScript ·
-                HTML / CSS · SQL · x86-64 Assembly · Bash · PowerShell
-            </p>
+        <section>
+            <div class="label" data-i18n="linksTitle">Elsewhere</div>
+            <div class="links">
+                <a class="link" href="https://github.com/eras-hallow" target="_blank" rel="noopener noreferrer">
+                    <span>GitHub</span><span class="arrow">↗</span>
+                </a>
+                <a class="link" href="https://discord.com/users/1315098356724404319" target="_blank" rel="noopener noreferrer">
+                    <span>Discord</span><span class="arrow">↗</span>
+                </a>
+                <a class="link" href="https://www.youtube.com/@comatique" target="_blank" rel="noopener noreferrer">
+                    <span>YouTube</span><span class="arrow">↗</span>
+                </a>
+                <a class="link" href="https://www.root-me.org/ctq?lang=fr#e0afd7dc3239691fa6480cb71b344c5a" target="_blank" rel="noopener noreferrer">
+                    <span>Root-Me</span><span class="arrow">↗</span>
+                </a>
+            </div>
         </section>
 
         <section>
             <div class="label" data-i18n="musicTitle">Now playing</div>
 
-            <div class="spotify-player">
-                <iframe
-                    src="https://open.spotify.com/embed/playlist/12Tt8gf31f6zixUEjgIpRj?theme=0"
-                    width="100%"
-                    height="352"
-                    style="border: 0; border-radius: 8px;"
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                    loading="lazy"
-                    title="My Spotify playlist">
-                </iframe>
+            <div class="music">
+                <div>
+                    <span class="track" id="track-title">—</span>
+                    <span class="artist" id="track-artist">—</span>
+                </div>
+
+                <div class="music-controls">
+                    <button id="music-button" data-i18n="playButton">Play</button>
+                    <button id="skip-button" data-i18n="skipButton">Skip</button>
+                </div>
             </div>
 
-            <p class="music-status">
-                <a
-                    href="https://open.spotify.com/playlist/12Tt8gf31f6zixUEjgIpRj"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-i18n="spotifyLink">
-                    Open playlist in Spotify ↗
-                </a>
+            <p class="music-status" id="music-status" aria-live="polite" data-i18n="musicStatus">
+                Sound may require a click to start.
             </p>
         </section>
 
-        <section>
-            <div class="label" data-i18n="linksTitle">Links</div>
-
-            <nav class="links" aria-label="Social links">
-                <a
-                    href="https://github.com/eras-hallow"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    <span>GitHub</span>
-                    <span class="arrow">↗</span>
-                </a>
-
-                <a
-                    href="https://discord.com/users/1315098356724404319"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    <span>Discord</span>
-                    <span class="arrow">↗</span>
-                </a>
-
-                <a
-                    href="https://www.youtube.com/@comatique"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    <span>YouTube</span>
-                    <span class="arrow">↗</span>
-                </a>
-
-                <a
-                    href="https://www.root-me.org/ctq?lang=fr#e0afd7dc3239691fa6480cb71b344c5a"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    <span>Root-Me</span>
-                    <span class="arrow">↗</span>
-                </a>
-            </nav>
-        </section>
-
         <footer>
-            <span>comatique</span>
-            <span id="year"></span>
+            <span>© 2026 comatique</span>
+            <span data-i18n="footer">Made out of curiosity.</span>
         </footer>
     </main>
 
+    <div id="youtube-player" aria-hidden="true"></div>
+
     <script>
+        // ========== PLAYLIST ==========
+        const playlist = [
+            { title: "Xtal", artist: "Aphex Twin · Selected Ambient Works 85–92", id: "sWcLccMuCA8" },
+            { title: "Pulsewidth", artist: "Aphex Twin · Selected Ambient Works 85–92", id: "OtAweb0IV14" },
+            { title: "104.6 Sky Fm", artist: "Regona", id: "zIt-F77fiOA" },
+            { title: "count on you", artist: "Vierre Cloud", id: "uze8BLxoWZY" },
+            { title: "Be Quiet and Drive (Far Away)", artist: "Deftones", id: "KvknOXGPzCQ" },
+            { title: "Digital Bath", artist: "Deftones", id: "O_IIAYZL1R4" },
+            { title: "Mein", artist: "Deftones", id: "WhstBxChY18" },
+            { title: "Love Shy (Tuff Jam Vocal Mix)", artist: "Kristine Blond, Tuff Jam", id: "V401G9SBm_E" },
+            { title: "Sweet talk (discandy tasty carrots remix)", artist: "Episode 🦄", id: "DiLVJY9fujM" }
+        ];
+
+        function shuffle(array) {
+            const a = [...array];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        let shuffledPlaylist = shuffle(playlist);
+        let currentIndex = 0;
+
+        // ========== Translations ==========
         const translations = {
             en: {
-                subtitle: "Programmer / Cybersecurity / Former Roblox developer",
-                bio: `I'm a 16-year-old self-taught programmer with a long-standing
-                interest in computer science, from software development to
-                low-level systems. I used to develop Roblox experiences, working
-                on scripting, interface design, building and coordinating
-                development work on roleplay projects.
-
-                <br><br>
-
-                Currently exploring cybersecurity, reverse engineering,
-                digital forensics, networking and operating systems. I enjoy
-                understanding how things work beneath the surface, learning
-                independently and going beyond the school curriculum.
-                My long-term goal is to teach computer science in higher education.`,
-                skillsTitle: "Languages & tools",
+                subtitle: "Programming · Cybersecurity · Systems",
+                status: "Learning by building.",
+                aboutTitle: "About",
+                about: `<p>I'm a 16-year-old self-taught programmer currently studying computer science in high school. I've been interested in computers since childhood, especially in understanding how things work beneath the surface.</p><p>I've worked on Roblox projects involving scripting, interfaces, building and collaborative development. These days, I'm exploring cybersecurity, reverse engineering, digital forensics, networking and operating systems.</p><p>In the long run, I'd like to teach computer science in higher education.</p>`,
+                techTitle: "Technologies",
+                linksTitle: "Elsewhere",
                 musicTitle: "Now playing",
-                spotifyLink: "Open playlist in Spotify ↗",
-                linksTitle: "Links"
+                playButton: "Play",
+                pauseButton: "Pause",
+                skipButton: "Skip",
+                musicStatus: "Sound may require a click to start.",
+                loadingStatus: "Loading…",
+                blockedStatus: "Click Play to start.",
+                playingStatus: "Playing",
+                pausedStatus: "Paused",
+                errorStatus: "Error – skipping…",
+                footer: "Made out of curiosity."
             },
-
             fr: {
-                subtitle: "Programmation / Cybersécurité / Ancien développeur Roblox",
-                bio: `J'ai 16 ans et je suis un programmeur autodidacte passionné
-                d'informatique depuis plusieurs années, du développement logiciel
-                aux systèmes de bas niveau. J'ai auparavant développé des
-                expériences Roblox, notamment en scripting, en interfaces,
-                en construction et en coordination de projets roleplay.
-
-                <br><br>
-
-                Je m'intéresse actuellement à la cybersécurité, au reverse
-                engineering, à l'investigation numérique, aux réseaux et aux
-                systèmes d'exploitation. J'aime comprendre ce qui se passe
-                derrière les outils que j'utilise, apprendre par moi-même
-                et aller au-delà du programme scolaire. Mon objectif à long
-                terme est d'enseigner l'informatique dans le supérieur.`,
-                skillsTitle: "Langages et outils",
-                musicTitle: "Musique",
-                spotifyLink: "Ouvrir la playlist sur Spotify ↗",
-                linksTitle: "Liens"
+                subtitle: "Programmation · Cybersécurité · Systèmes",
+                status: "Apprendre en construisant.",
+                aboutTitle: "À propos",
+                about: `<p>J'ai 16 ans et je suis développeur autodidacte, actuellement au lycée en spécialité informatique. Depuis l'enfance, j'aime comprendre comment les technologies fonctionnent en profondeur.</p><p>J'ai travaillé sur des projets Roblox : scripts, interfaces, construction et développement en équipe. Aujourd'hui, je m'intéresse à la cybersécurité, au reverse engineering, à la criminalistique numérique, aux réseaux et aux systèmes d'exploitation.</p><p>À long terme, j'aimerais enseigner l'informatique dans le supérieur.</p>`,
+                techTitle: "Technologies",
+                linksTitle: "Me retrouver",
+                musicTitle: "En écoute",
+                playButton: "Écouter",
+                pauseButton: "Pause",
+                skipButton: "Suivant",
+                musicStatus: "Un clic peut être nécessaire pour lancer le son.",
+                loadingStatus: "Chargement…",
+                blockedStatus: "Clique sur Écouter pour commencer.",
+                playingStatus: "Lecture en cours",
+                pausedStatus: "En pause",
+                errorStatus: "Erreur – piste suivante…",
+                footer: "Fait par curiosité."
             },
-
             es: {
-                subtitle: "Programación / Ciberseguridad / Exdesarrollador de Roblox",
-                bio: `Tengo 16 años y soy un programador autodidacta interesado
-                en la informática desde hace años, desde el desarrollo de software
-                hasta los sistemas de bajo nivel. Anteriormente desarrollaba
-                experiencias de Roblox, trabajando en scripts, interfaces,
-                construcción y coordinación de proyectos de roleplay.
-
-                <br><br>
-
-                Actualmente estoy explorando la ciberseguridad, la ingeniería
-                inversa, el análisis forense digital, las redes y los sistemas
-                operativos. Me gusta entender cómo funcionan las cosas por
-                dentro, aprender de forma independiente e ir más allá del
-                programa escolar. Mi objetivo a largo plazo es enseñar
-                informática en la educación superior.`,
-                skillsTitle: "Lenguajes y herramientas",
-                musicTitle: "Música",
-                spotifyLink: "Abrir la lista en Spotify ↗",
-                linksTitle: "Enlaces"
+                subtitle: "Programación · Ciberseguridad · Sistemas",
+                status: "Aprender creando.",
+                aboutTitle: "Sobre mí",
+                about: `<p>Tengo 16 años y soy programador autodidacta. Actualmente estudio informática en el instituto. Desde pequeño me interesa comprender cómo funcionan las tecnologías más allá de su superficie.</p><p>He trabajado en proyectos de Roblox con scripts, interfaces, construcción y desarrollo en equipo. Ahora me interesan la ciberseguridad, la ingeniería inversa, la informática forense, las redes y los sistemas operativos.</p><p>A largo plazo, me gustaría enseñar informática en la educación superior.</p>`,
+                techTitle: "Tecnologías",
+                linksTitle: "Encuéntrame",
+                musicTitle: "Sonando ahora",
+                playButton: "Reproducir",
+                pauseButton: "Pausar",
+                skipButton: "Siguiente",
+                musicStatus: "Puede ser necesario hacer clic para escuchar.",
+                loadingStatus: "Cargando…",
+                blockedStatus: "Pulsa Reproducir para empezar.",
+                playingStatus: "Reproduciendo",
+                pausedStatus: "En pausa",
+                errorStatus: "Error – siguiente…",
+                footer: "Hecho por curiosidad."
             }
         };
 
-        const languageButtons = document.querySelectorAll("[data-lang]");
+        let currentLang = "en";
 
-        function setLanguage(language) {
-            const content = translations[language];
-            if (!content) return;
+        function setLanguage(lang) {
+            currentLang = lang;
+            const words = translations[lang];
+            document.documentElement.lang = lang;
 
-            document.documentElement.lang = language;
-
-            document.querySelectorAll("[data-i18n]").forEach(element => {
-                const key = element.dataset.i18n;
-
-                if (content[key] !== undefined) {
-                    element.innerHTML = content[key];
-                }
+            document.querySelectorAll("[data-i18n]").forEach(el => {
+                const key = el.dataset.i18n;
+                if (words[key] !== undefined) el.innerHTML = words[key];
             });
 
-            languageButtons.forEach(button => {
-                const selected = button.dataset.lang === language;
-
-                button.classList.toggle("active", selected);
-                button.setAttribute("aria-pressed", String(selected));
+            document.querySelectorAll("[data-lang]").forEach(btn => {
+                const selected = btn.dataset.lang === lang;
+                btn.classList.toggle("active", selected);
+                btn.setAttribute("aria-pressed", selected);
             });
+
+            updateMusicButton();
         }
 
-        languageButtons.forEach(button => {
-            button.addEventListener("click", () => {
-                setLanguage(button.dataset.lang);
-            });
+        document.querySelectorAll("[data-lang]").forEach(btn => {
+            btn.addEventListener("click", () => setLanguage(btn.dataset.lang));
         });
 
-        document.getElementById("year").textContent =
-            new Date().getFullYear();
-
+        // ========== Game of Life ==========
         const canvas = document.getElementById("life");
         const ctx = canvas.getContext("2d");
+        const cellSize = 12;
+        let grid = [], columns = 0, rows = 0, lastFrame = 0;
 
-        const CELL = 12;
-        const SPEED = 140;
-        const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-
-        let cols;
-        let rows;
-        let grid;
-        let lastUpdate = 0;
-        let animationId = null;
-
-        function resize() {
-            const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-            canvas.width = Math.round(window.innerWidth * dpr);
-            canvas.height = Math.round(window.innerHeight * dpr);
-
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-            cols = Math.ceil(window.innerWidth / CELL);
-            rows = Math.ceil(window.innerHeight / CELL);
-
+        function resizeGrid() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            columns = Math.ceil(canvas.width / cellSize);
+            rows = Math.ceil(canvas.height / cellSize);
             grid = Array.from({ length: rows }, () =>
-                Array.from({ length: cols }, () =>
-                    Math.random() < 0.22 ? 1 : 0
-                )
+                Array.from({ length: columns }, () => Math.random() < 0.16 ? 1 : 0)
             );
-
-            draw();
         }
 
-        function step() {
-            const next = Array.from({ length: rows }, () =>
-                new Uint8Array(cols)
-            );
-
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#ffffff";
             for (let y = 0; y < rows; y++) {
-                for (let x = 0; x < cols; x++) {
-                    let neighbors = 0;
+                for (let x = 0; x < columns; x++) {
+                    if (grid[y][x]) {
+                        ctx.fillRect(x * cellSize + 2, y * cellSize + 2, cellSize - 3, cellSize - 3);
+                    }
+                }
+            }
+        }
 
+        function evolveGrid() {
+            const next = Array.from({ length: rows }, () => Array(columns).fill(0));
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < columns; x++) {
+                    let n = 0;
                     for (let dy = -1; dy <= 1; dy++) {
                         for (let dx = -1; dx <= 1; dx++) {
                             if (dx === 0 && dy === 0) continue;
-
-                            const ny = y + dy;
-                            const nx = x + dx;
-
-                            if (
-                                ny >= 0 && ny < rows &&
-                                nx >= 0 && nx < cols
-                            ) {
-                                neighbors += grid[ny][nx];
-                            }
+                            const nx = x + dx, ny = y + dy;
+                            if (nx >= 0 && nx < columns && ny >= 0 && ny < rows) n += grid[ny][nx];
                         }
                     }
-
-                    next[y][x] =
-                        neighbors === 3 ||
-                        (grid[y][x] && neighbors === 2)
-                            ? 1 : 0;
+                    next[y][x] = grid[y][x] ? (n === 2 || n === 3 ? 1 : 0) : (n === 3 ? 1 : 0);
                 }
             }
-
             grid = next;
         }
 
-        function draw() {
-            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-            ctx.fillStyle = "#fff";
+        function animate(ts) {
+            requestAnimationFrame(animate);
+            if (ts - lastFrame < 130) return;
+            lastFrame = ts;
+            evolveGrid();
+            drawGrid();
+        }
 
-            for (let y = 0; y < rows; y++) {
-                for (let x = 0; x < cols; x++) {
-                    if (grid[y][x]) {
-                        ctx.fillRect(
-                            x * CELL + 1,
-                            y * CELL + 1,
-                            CELL - 2,
-                            CELL - 2
-                        );
+        resizeGrid();
+        requestAnimationFrame(animate);
+        window.addEventListener("resize", resizeGrid);
+
+        // ========== YouTube Player ==========
+        const musicButton = document.getElementById("music-button");
+        const skipButton = document.getElementById("skip-button");
+        const musicStatus = document.getElementById("music-status");
+        const trackTitleEl = document.getElementById("track-title");
+        const trackArtistEl = document.getElementById("track-artist");
+
+        let player = null;
+        let playerReady = false;
+        let isPlaying = false;
+        let isLoading = false;
+
+        function updateTrackDisplay() {
+            const track = shuffledPlaylist[currentIndex];
+            if (track) {
+                trackTitleEl.textContent = track.title;
+                trackArtistEl.textContent = track.artist;
+            }
+        }
+
+        function updateMusicButton() {
+            const words = translations[currentLang];
+            musicButton.textContent = isPlaying ? words.pauseButton : words.playButton;
+        }
+
+        function setStatus(key, extra = "") {
+            const words = translations[currentLang];
+            let text = words[key] || key;
+            if (extra) text += " · " + extra;
+            musicStatus.textContent = text;
+        }
+
+        function loadTrack(index, autoplay = false) {
+            if (!player || !playerReady || isLoading) return;
+            isLoading = true;
+
+            currentIndex = index;
+            const track = shuffledPlaylist[currentIndex];
+            updateTrackDisplay();
+            setStatus("loadingStatus");
+
+            player.loadVideoById({
+                videoId: track.id,
+                startSeconds: 0
+            });
+
+            // Petit délai pour laisser le player charger
+            setTimeout(() => {
+                isLoading = false;
+                if (autoplay) {
+                    player.playVideo();
+                } else {
+                    setStatus("blockedStatus");
+                }
+            }, 400);
+        }
+
+        function nextTrack(autoplay = true) {
+            const next = (currentIndex + 1) % shuffledPlaylist.length;
+            loadTrack(next, autoplay);
+        }
+
+        musicButton.addEventListener("click", () => {
+            if (!playerReady || !player || isLoading) {
+                setStatus("loadingStatus");
+                return;
+            }
+
+            if (isPlaying) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+        });
+
+        skipButton.addEventListener("click", () => {
+            if (!playerReady || isLoading) return;
+            nextTrack(true); // skip et lance la suivante
+        });
+
+        // Load YouTube API
+        const tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(tag);
+
+        window.onYouTubeIframeAPIReady = function () {
+            const first = shuffledPlaylist[0];
+
+            player = new YT.Player("youtube-player", {
+                width: "200",
+                height: "200",
+                videoId: first.id,
+                playerVars: {
+                    autoplay: 0,
+                    controls: 0,
+                    playsinline: 1,
+                    rel: 0,
+                    modestbranding: 1
+                },
+                events: {
+                    onReady: function () {
+                        playerReady = true;
+                        updateTrackDisplay();
+                        setStatus("blockedStatus");
+                    },
+                    onStateChange: function (event) {
+                        // On ignore les états pendant le chargement
+                        if (isLoading) return;
+
+                        if (event.data === YT.PlayerState.PLAYING) {
+                            isPlaying = true;
+                            const track = shuffledPlaylist[currentIndex];
+                            setStatus("playingStatus", track ? track.title : "");
+                        } else if (event.data === YT.PlayerState.PAUSED) {
+                            isPlaying = false;
+                            setStatus("pausedStatus");
+                        } else if (event.data === YT.PlayerState.ENDED) {
+                            // Vraiment terminé → piste suivante
+                            nextTrack(true);
+                        }
+
+                        updateMusicButton();
+                    },
+                    onError: function () {
+                        isPlaying = false;
+                        setStatus("errorStatus");
+                        updateMusicButton();
+                        // On attend un peu puis on passe à la suivante
+                        setTimeout(() => nextTrack(true), 1200);
                     }
                 }
-            }
-        }
+            });
+        };
 
-        function animate(timestamp) {
-            animationId = requestAnimationFrame(animate);
-
-            if (document.hidden || reducedMotion.matches) return;
-            if (timestamp - lastUpdate < SPEED) return;
-
-            lastUpdate = timestamp;
-            step();
-            draw();
-        }
-
-        function stop() {
-            if (animationId !== null) {
-                cancelAnimationFrame(animationId);
-                animationId = null;
-            }
-        }
-
-        function start() {
-            stop();
-
-            if (!document.hidden && !reducedMotion.matches) {
-                animationId = requestAnimationFrame(animate);
-            }
-        }
-
-        document.addEventListener("visibilitychange", start);
-        reducedMotion.addEventListener("change", start);
-        window.addEventListener("resize", resize);
-
-        resize();
-        start();
+        // Init
+        updateTrackDisplay();
+        setLanguage("en");
     </script>
 </body>
 </html>

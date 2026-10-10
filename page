@@ -21,10 +21,6 @@
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
             margin: 0;
             background: var(--bg);
@@ -81,14 +77,13 @@
 
         .language {
             display: flex;
+            gap: 12px;
             justify-content: flex-end;
-            gap: 10px;
-            margin-top: -22px;
-            margin-bottom: 28px;
+            margin-top: 20px;
         }
 
         .language button {
-            padding: 3px 0;
+            padding: 0;
             border: 0;
             background: none;
             color: var(--muted);
@@ -112,7 +107,7 @@
             margin-top: 36px;
         }
 
-        h2 {
+        .label {
             margin: 0 0 12px;
             font-size: 11px;
             font-weight: 400;
@@ -149,24 +144,7 @@
             color: var(--muted);
         }
 
-        .music {
-            border-top: 1px solid var(--line);
-            padding-top: 15px;
-        }
-
-        .track {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            gap: 12px;
-            margin-bottom: 12px;
-            font-size: 12px;
-        }
-
-        .track span:last-child {
-            color: var(--muted);
-            text-align: right;
-        }
+        /* Spotify */
 
         .spotify-player {
             overflow: hidden;
@@ -180,22 +158,23 @@
             width: 100%;
             height: 352px;
             border: 0;
+            border-radius: 8px;
             filter: grayscale(1);
         }
 
-        .music-note {
+        .music-status {
             margin: 10px 0 0;
-            color: var(--muted);
             font-size: 11px;
         }
 
-        .music-note a {
-            color: var(--fg);
+        .music-status a {
+            color: var(--muted);
             text-decoration: none;
+            transition: color .2s ease;
         }
 
-        .music-note a:hover {
-            text-decoration: underline;
+        .music-status a:hover {
+            color: var(--fg);
         }
 
         footer {
@@ -218,27 +197,13 @@
             }
 
             .language {
-                margin-top: 22px;
-                margin-bottom: 0;
                 justify-content: flex-start;
-            }
-
-            .track {
-                flex-direction: column;
-                gap: 2px;
-            }
-
-            .track span:last-child {
-                text-align: left;
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            html {
-                scroll-behavior: auto;
-            }
-
             * {
+                scroll-behavior: auto !important;
                 transition: none !important;
             }
         }
@@ -256,7 +221,6 @@
                 alt="GitHub profile picture"
                 width="48"
                 height="48"
-                fetchpriority="high"
             >
 
             <div>
@@ -268,7 +232,7 @@
         </header>
 
         <nav class="language" aria-label="Language">
-            <button class="active" type="button" data-lang="en">EN</button>
+            <button type="button" data-lang="en" class="active">EN</button>
             <button type="button" data-lang="fr">FR</button>
             <button type="button" data-lang="es">ES</button>
         </nav>
@@ -290,7 +254,10 @@
         </p>
 
         <section>
-            <h2 data-i18n="skillsTitle">Languages &amp; tools</h2>
+            <div class="label" data-i18n="skillsTitle">
+                Languages &amp; tools
+            </div>
+
             <p class="stack">
                 Python · C · C++ · Lua / Luau · JavaScript ·
                 HTML / CSS · SQL · x86-64 Assembly · Bash · PowerShell
@@ -298,42 +265,33 @@
         </section>
 
         <section>
-            <h2 data-i18n="musicTitle">Music</h2>
+            <div class="label" data-i18n="musicTitle">Now playing</div>
 
-            <div class="music">
-                <div class="track">
-                    <span data-i18n="playlistName">Personal playlist</span>
-                    <span data-i18n="playlistDescription">
-                        A collection of tracks I listen to
-                    </span>
-                </div>
-
-                <div class="spotify-player">
-                    <iframe
-                        src="https://open.spotify.com/embed/playlist/12Tt8gf31f6zixUEjgIpRj?theme=0"
-                        title="comatique's Spotify playlist"
-                        loading="lazy"
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                        referrerpolicy="strict-origin-when-cross-origin">
-                    </iframe>
-                </div>
-
-                <p class="music-note">
-                    <span data-i18n="spotifyNote">
-                        Listen on
-                    </span>
-                    <a
-                        href="https://open.spotify.com/playlist/12Tt8gf31f6zixUEjgIpRj?si=e3b749094f894e6e"
-                        target="_blank"
-                        rel="noopener noreferrer">
-                        Spotify ↗
-                    </a>
-                </p>
+            <div class="spotify-player">
+                <iframe
+                    src="https://open.spotify.com/embed/playlist/12Tt8gf31f6zixUEjgIpRj?theme=0"
+                    width="100%"
+                    height="352"
+                    style="border: 0; border-radius: 8px;"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                    title="My Spotify playlist">
+                </iframe>
             </div>
+
+            <p class="music-status">
+                <a
+                    href="https://open.spotify.com/playlist/12Tt8gf31f6zixUEjgIpRj"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-i18n="spotifyLink">
+                    Open playlist in Spotify ↗
+                </a>
+            </p>
         </section>
 
         <section>
-            <h2 data-i18n="linksTitle">Links</h2>
+            <div class="label" data-i18n="linksTitle">Links</div>
 
             <nav class="links" aria-label="Social links">
                 <a
@@ -394,10 +352,8 @@
                 independently and going beyond the school curriculum.
                 My long-term goal is to teach computer science in higher education.`,
                 skillsTitle: "Languages & tools",
-                musicTitle: "Music",
-                playlistName: "Personal playlist",
-                playlistDescription: "A collection of tracks I listen to",
-                spotifyNote: "Listen on",
+                musicTitle: "Now playing",
+                spotifyLink: "Open playlist in Spotify ↗",
                 linksTitle: "Links"
             },
 
@@ -419,9 +375,7 @@
                 terme est d'enseigner l'informatique dans le supérieur.`,
                 skillsTitle: "Langages et outils",
                 musicTitle: "Musique",
-                playlistName: "Playlist personnelle",
-                playlistDescription: "Une sélection de morceaux que j'écoute",
-                spotifyNote: "Écouter sur",
+                spotifyLink: "Ouvrir la playlist sur Spotify ↗",
                 linksTitle: "Liens"
             },
 
@@ -443,9 +397,7 @@
                 informática en la educación superior.`,
                 skillsTitle: "Lenguajes y herramientas",
                 musicTitle: "Música",
-                playlistName: "Lista personal",
-                playlistDescription: "Una selección de canciones que escucho",
-                spotifyNote: "Escuchar en",
+                spotifyLink: "Abrir la lista en Spotify ↗",
                 linksTitle: "Enlaces"
             }
         };
@@ -454,7 +406,6 @@
 
         function setLanguage(language) {
             const content = translations[language];
-
             if (!content) return;
 
             document.documentElement.lang = language;

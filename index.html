@@ -160,6 +160,22 @@
         .link:hover { color: var(--muted); }
         .arrow { color: var(--muted); }
 
+        .repo-list { display: flex; flex-direction: column; }
+
+        .repo {
+            padding: 13px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .repo:first-child { border-top: 1px solid var(--line); }
+        .repo-name { font-weight: 500; }
+        .repo-name:hover { color: var(--muted); }
+        .repo-description { margin: 4px 0 7px; color: var(--muted); font-size: 12px; }
+        .repo-meta { display: flex; flex-wrap: wrap; gap: 12px; color: #777; font-size: 10px; }
+        .repo-status { margin: 0; color: var(--muted); font-size: 12px; }
+        .repo-all { display: inline-block; margin-top: 12px; color: var(--muted); font-size: 11px; }
+        .repo-all:hover { color: var(--text); }
+
         .music {
             display: flex;
             justify-content: space-between;
@@ -285,6 +301,13 @@
         </section>
 
         <section>
+            <div class="label" data-i18n="reposTitle">Public repositories</div>
+            <div class="repo-list" id="repo-list" aria-live="polite"></div>
+            <p class="repo-status" id="repo-status" data-i18n="reposLoading">Loading public repositories…</p>
+            <a class="repo-all" href="https://github.com/eras-hallow?tab=repositories" target="_blank" rel="noopener noreferrer" data-i18n="reposAll">View all repositories ↗</a>
+        </section>
+
+        <section>
             <div class="label" data-i18n="linksTitle">Elsewhere</div>
             <div class="links">
                 <a class="link" href="https://github.com/eras-hallow" target="_blank" rel="noopener noreferrer">
@@ -361,6 +384,12 @@
                 aboutTitle: "About",
                 about: `<p>I'm a 16-year-old self-taught programmer currently studying computer science in high school. I've been interested in computers since childhood, especially in understanding how things work beneath the surface.</p><p>I've worked on Roblox projects involving scripting, interfaces, building and collaborative development. These days, I'm exploring cybersecurity, reverse engineering, digital forensics, networking and operating systems.</p><p>In the long run, I'd like to teach computer science in higher education.</p>`,
                 techTitle: "Technologies",
+                reposTitle: "Public repositories",
+                reposLoading: "Loading public repositories…",
+                reposError: "Repositories could not be loaded.",
+                reposEmpty: "No public repositories yet.",
+                reposAll: "View all repositories ↗",
+                repoFork: "Fork",
                 linksTitle: "Elsewhere",
                 musicTitle: "Now playing",
                 playButton: "Play",
@@ -380,6 +409,12 @@
                 aboutTitle: "À propos",
                 about: `<p>J'ai 16 ans et je suis développeur autodidacte, actuellement au lycée en spécialité informatique. Depuis l'enfance, j'aime comprendre comment les technologies fonctionnent en profondeur.</p><p>J'ai travaillé sur des projets Roblox : scripts, interfaces, construction et développement en équipe. Aujourd'hui, je m'intéresse à la cybersécurité, au reverse engineering, à la criminalistique numérique, aux réseaux et aux systèmes d'exploitation.</p><p>À long terme, j'aimerais enseigner l'informatique dans le supérieur.</p>`,
                 techTitle: "Technologies",
+                reposTitle: "Dépôts publics",
+                reposLoading: "Chargement des dépôts publics…",
+                reposError: "Impossible de charger les dépôts.",
+                reposEmpty: "Aucun dépôt public pour le moment.",
+                reposAll: "Voir tous les dépôts ↗",
+                repoFork: "Fork",
                 linksTitle: "Me retrouver",
                 musicTitle: "En écoute",
                 playButton: "Écouter",
@@ -399,6 +434,12 @@
                 aboutTitle: "Sobre mí",
                 about: `<p>Tengo 16 años y soy programador autodidacta. Actualmente estudio informática en el instituto. Desde pequeño me interesa comprender cómo funcionan las tecnologías más allá de su superficie.</p><p>He trabajado en proyectos de Roblox con scripts, interfaces, construcción y desarrollo en equipo. Ahora me interesan la ciberseguridad, la ingeniería inversa, la informática forense, las redes y los sistemas operativos.</p><p>A largo plazo, me gustaría enseñar informática en la educación superior.</p>`,
                 techTitle: "Tecnologías",
+                reposTitle: "Repositorios públicos",
+                reposLoading: "Cargando repositorios públicos…",
+                reposError: "No se pudieron cargar los repositorios.",
+                reposEmpty: "Todavía no hay repositorios públicos.",
+                reposAll: "Ver todos los repositorios ↗",
+                repoFork: "Fork",
                 linksTitle: "Encuéntrame",
                 musicTitle: "Sonando ahora",
                 playButton: "Reproducir",
@@ -438,6 +479,57 @@
         document.querySelectorAll("[data-lang]").forEach(btn => {
             btn.addEventListener("click", () => setLanguage(btn.dataset.lang));
         });
+
+        async function loadRepositories() {
+            const list = document.getElementById("repo-list");
+            const status = document.getElementById("repo-status");
+
+            try {
+                const response = await fetch("https://api.github.com/users/eras-hallow/repos?sort=updated&per_page=6");
+                if (!response.ok) throw new Error("GitHub API request failed");
+
+                const repositories = await response.json();
+                const words = translations[currentLang];
+                status.textContent = "";
+
+                if (repositories.length === 0) {
+                    status.textContent = words.reposEmpty;
+                    return;
+                }
+
+                repositories.forEach(repository => {
+                    const item = document.createElement("article");
+                    item.className = "repo";
+
+                    const name = document.createElement("a");
+                    name.className = "repo-name";
+                    name.href = repository.html_url;
+                    name.target = "_blank";
+                    name.rel = "noopener noreferrer";
+                    name.textContent = repository.name;
+                    item.appendChild(name);
+
+                    if (repository.description) {
+                        const description = document.createElement("p");
+                        description.className = "repo-description";
+                        description.textContent = repository.description;
+                        item.appendChild(description);
+                    }
+
+                    const meta = document.createElement("div");
+                    meta.className = "repo-meta";
+                    if (repository.language) meta.append(repository.language);
+                    meta.append(`★ ${new Intl.NumberFormat(currentLang).format(repository.stargazers_count)}`);
+                    if (repository.fork) meta.append(words.repoFork);
+                    item.appendChild(meta);
+                    list.appendChild(item);
+                });
+            } catch {
+                status.textContent = translations[currentLang].reposError;
+            }
+        }
+
+        loadRepositories();
 
         // ========== Game of Life ==========
         const canvas = document.getElementById("life");
